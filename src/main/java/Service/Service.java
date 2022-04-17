@@ -37,12 +37,38 @@ public class Service {
 			throw new Exception("Invalid Data!");
 		}
 	}
+    
+    public void tryRegister(String username, String password) throws Exception {
+    	//validation
+    	if((username.length()<=3 && username.length()>0)||
+    			(password.length()<=3 && password.length()>0)) {
+    			throw new Exception("Credentials too short!");
+    		}
+    		
+    		if(username.length()==0 || password.length()==0) {
+    			throw new Exception("Fields cannot be empty!");
+    		}
+    		if(username.length()>49 || password.length()>49) {
+    			throw new Exception("Credentials too long!");
+    		}
+    	//logic
+    	repo.addUser(username, password);
+    }
+    
+    public void addStonksData(String manufacturer, String model, int quantity, int price) {
+    	repo.addData(manufacturer, model, quantity, price);
+    }
+    
+    public void removeDataWithID(String query) {
+    	repo.removeStonkWithID(query);
+    }
 	
 	public List<String[]> stonkGetAllData() {
 		List<String[]> l = new ArrayList<>();
 		
 		for(Stock stock: repo.getAllStocks()) {
 			l.add(new String[] {
+					Integer.toString(stock.getID()),
 					stock.getManufacturer(),
 					stock.getModel(),
 					Integer.toString(stock.getQuantity()),
@@ -58,6 +84,7 @@ public class Service {
 		
 		for(Stock stock: repo.searchStocksProgressive(query)) {
 			l.add(new String[] {
+					Integer.toString(stock.getID()),
 					stock.getManufacturer(),
 					stock.getModel(),
 					Integer.toString(stock.getQuantity()),

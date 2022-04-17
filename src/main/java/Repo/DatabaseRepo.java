@@ -21,6 +21,25 @@ public class DatabaseRepo {
     public DatabaseRepo() {
     	
     }
+    
+    public void removeStonkWithID(String id) {
+    	con = getConnection();
+    	try {
+    		String query =  "DELETE FROM stonks WHERE id=?;";
+    		ps = con.prepareStatement(query);
+    		ps.setString(1, id);
+    		ps.execute();
+    		System.out.println(id + " deleted");
+    	} catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
  
     public int checkLogin(String username, String password) {
         con = getConnection();
@@ -44,6 +63,48 @@ public class DatabaseRepo {
             }
         }
         return 0;
+    }
+    
+    public void addUser(String username, String password) {
+    	con = getConnection();
+    	try {
+    		String query =  "INSERT INTO accounts (username, password) VALUES (?, ?)";
+    		ps = con.prepareStatement(query);
+    		ps.setString(1, username);
+    		ps.setString(2, password);
+    		ps.execute();
+    		System.out.println(username + ", " + password + " worked");
+    	} catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    public void addData(String manufacturer, String model, int quantity, int price) {
+    	con = getConnection();
+    	try {
+    		String query =  "INSERT INTO stonks (manufacturer, model, quantity, price) VALUES (?, ?, ?, ?)";
+    		ps = con.prepareStatement(query);
+    		ps.setString(1, manufacturer);
+    		ps.setString(2, model);
+    		ps.setInt(3, quantity);
+    		ps.setInt(4, price);
+    		ps.execute();
+    		System.out.println(manufacturer + ", " + model + ", " +quantity + ", " +price + ", " +" worked");
+    	} catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
     
     public Connection getConnection() {

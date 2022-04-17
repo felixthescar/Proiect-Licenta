@@ -30,6 +30,7 @@ public class LoginPanel extends JPanel{
 	private JTextField usernameText;
 	private JPasswordField passwordText;
 	private JButton loginButton;
+	private JButton registerButton;
 	
 	public LoginPanel(Service s) {
 		super();
@@ -37,13 +38,7 @@ public class LoginPanel extends JPanel{
 		initComponents();
 		this.s = s;
 		initLoginButton();
-	}
-	
-	private void arrangeComponents() {
-		super.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-		super.setAlignmentY(JComponent.CENTER_ALIGNMENT);
-		super.revalidate();
-		super.repaint();
+		initRegisterButton();
 	}
 	
 	private void initComponents() {
@@ -95,10 +90,35 @@ public class LoginPanel extends JPanel{
 		
 	}
 	
-	private void initLoginButton() {
-		loginButton  = new JButton("Login here");
+	private void initRegisterButton() {
+		registerButton  = new JButton("Register");
 		//loginButton.setBounds(10, 80, 160, 25);
-		loginButton.setBounds(900/2-70, 600/2+15, 165, 25);
+		registerButton.setBounds(900/2-70+85, 600/2+15, 80, 25);
+		registerButton.setForeground(Color.white);
+		registerButton.setBackground(Color.DARK_GRAY);
+		super.add(registerButton);
+		
+		//when clicked
+		registerButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+	        	String username = usernameText.getText();
+	        	String password = new String(passwordText.getPassword());
+	        	
+	        	try {
+					s.tryRegister(username, password);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(null, e1.getMessage());
+				}
+			}
+		});
+	}
+	
+	private void initLoginButton() {
+		loginButton  = new JButton("Login");
+		//loginButton.setBounds(10, 80, 160, 25);
+		loginButton.setBounds(900/2-70, 600/2+15, 80, 25);
 		loginButton.setForeground(Color.white);
 		loginButton.setBackground(Color.DARK_GRAY);
 		super.add(loginButton);
