@@ -54,6 +54,19 @@ public class Service {
     	//logic
     	repo.addUser(username, password);
     }
+
+	public void tryModifyStonks(int id, String man, String mod, String qnt, String price) {
+		//validation
+		int qntInt, priceInt;
+		if(qnt.equals("")) qntInt=0;
+		else qntInt = Integer.parseInt(qnt);
+		
+		if(price.equals("")) priceInt=0;
+		else priceInt = Integer.parseInt(price);
+
+		//logic
+		repo.modifyStonkWithID(id, man, mod, qntInt, priceInt);
+	}
     
     public void addStonksData(String manufacturer, String model, int quantity, int price) {
     	repo.addData(manufacturer, model, quantity, price);

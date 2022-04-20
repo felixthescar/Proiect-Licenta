@@ -40,6 +40,30 @@ public class DatabaseRepo {
             }
         }
     }
+    
+    public void modifyStonkWithID (int id, String man, String mod, int qnt, int price) {
+    	con = getConnection();
+    	try {
+    		//System.out.println(id);
+			String query = "UPDATE stonks SET manufacturer=?, model=?, quantity=?, price=? WHERE id=?;";
+			ps = con.prepareStatement(query);
+			ps.setString(1, man);
+			ps.setString(2, mod);
+			ps.setInt(3, qnt);
+			ps.setInt(4, price);
+			ps.setInt(5, id);
+			ps.execute();
+			System.out.println("modificat ficat ficat");
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} finally {
+    		try {
+    			con.close();
+    		} catch (SQLException ex) {
+    			ex.printStackTrace();
+    		}
+    	}
+    }
  
     public int checkLogin(String username, String password) {
         con = getConnection();

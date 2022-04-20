@@ -39,21 +39,37 @@ public class AdminPanel extends JPanel{
 	
 	JTextField searchTextField;
 	JTextField removeTextField;
+
 	JTextField addStockManufacturerTextField;
 	JTextField addStockModelTextField;
 	JTextField addStockQuantityTextField;
 	JTextField addStockPriceTextField;
-	JLabel searchLabel;
+	
+    JTextField modifyStockIDTextField;
+    JTextField modifyStockManufacturerTextField;
+	JTextField modifyStockModelTextField;
+	JTextField modifyStockQuantityTextField;
+	JTextField modifyStockPriceTextField;
+	
+    JLabel searchLabel;
 	JLabel removeLabel;
-	JLabel addStockManufacturerLabel;
+	
+    JLabel addStockManufacturerLabel;
 	JLabel addStockModelLabel;
 	JLabel addStockQuantityLabel;
 	JLabel addStockPriceLabel;
+	
+    JLabel modifyStockIDLabel;
+    JLabel modifyStockManufacturerLabel;
+	JLabel modifyStockModelLabel;
+	JLabel modifyStockQuantityLabel;
+	JLabel modifyStockPriceLabel;
 	
 	
 	JButton backButton;
 	JButton exitButton;
 	JButton stockAddButton;
+    JButton stockModifyButton;
 	
 	JMenuBar menuBar;
 	JMenu stockMenu;
@@ -91,6 +107,11 @@ public class AdminPanel extends JPanel{
 	}
 	
 	private void loadStockModifyPanel() {
+		initSearchTextField();
+		initStockTable();
+		loadAllDataInTable();
+		initModifyTextField();
+
 		revalidare();
 	}
 	
@@ -111,6 +132,7 @@ public class AdminPanel extends JPanel{
 	
 	private void initJMenu() {
 		menuBar = new JMenuBar();
+		menuBar.setBackground(Color.DARK_GRAY);
 		stockMenu = new JMenu("StockActions");
 		stockMenu.setForeground(Color.white);
 		stockMenu.setBackground(Color.black);
@@ -178,6 +200,70 @@ public class AdminPanel extends JPanel{
 				loadStockDeletePanel();
 			}
 		});
+	}
+	
+	private void initModifyTextField() {
+		modifyStockIDLabel = new JLabel("Id to modify");
+		modifyStockIDLabel.setForeground(Color.white);
+        modifyStockIDTextField = new JTextField();
+        modifyStockIDTextField.setForeground(Color.white);
+        modifyStockIDTextField.setBackground(Color.DARK_GRAY);
+
+        modifyStockManufacturerLabel = new JLabel("Manuf to modify");
+		modifyStockManufacturerLabel.setForeground(Color.white);
+        modifyStockManufacturerTextField = new JTextField();
+        modifyStockManufacturerTextField.setForeground(Color.white);
+        modifyStockManufacturerTextField.setBackground(Color.DARK_GRAY);
+
+        modifyStockModelLabel = new JLabel("Model to modify");
+		modifyStockModelLabel.setForeground(Color.white);
+        modifyStockModelTextField = new JTextField();
+        modifyStockModelTextField.setForeground(Color.white);
+        modifyStockModelTextField.setBackground(Color.DARK_GRAY);
+
+        modifyStockQuantityLabel = new JLabel("Quantity to modify");
+		modifyStockQuantityLabel.setForeground(Color.white);
+        modifyStockQuantityTextField = new JTextField();
+        modifyStockQuantityTextField.setForeground(Color.white);
+        modifyStockQuantityTextField.setBackground(Color.DARK_GRAY);
+
+        modifyStockPriceLabel = new JLabel("Price to modify");
+		modifyStockPriceLabel.setForeground(Color.white);
+        modifyStockPriceTextField = new JTextField();
+        modifyStockPriceTextField.setForeground(Color.white);
+        modifyStockPriceTextField.setBackground(Color.DARK_GRAY);
+
+        stockModifyButton = new JButton("Dew it");
+        stockModifyButton.setVisible(true);
+        stockModifyButton.setBackground(Color.DARK_GRAY);
+        stockModifyButton.setForeground(Color.white);
+
+        stockModifyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                modifyStockData();
+            }
+        });
+
+		modifyStockIDTextField.setPreferredSize(new Dimension(100, 20));
+		modifyStockManufacturerTextField.setPreferredSize(new Dimension(100, 20));
+		modifyStockModelTextField.setPreferredSize(new Dimension(100, 20));
+		modifyStockQuantityTextField.setPreferredSize(new Dimension(100, 20));
+		modifyStockPriceTextField.setPreferredSize(new Dimension(100, 20));
+		
+
+        this.add(modifyStockIDLabel);
+        this.add(modifyStockIDTextField);
+        this.add(modifyStockManufacturerLabel);
+        this.add(modifyStockManufacturerTextField);
+        this.add(modifyStockModelLabel);
+        this.add(modifyStockModelTextField);
+        this.add(modifyStockQuantityLabel);
+        this.add(modifyStockQuantityTextField);
+        this.add(modifyStockPriceLabel);
+        this.add(modifyStockPriceTextField);
+
+        this.add(stockModifyButton);
 	}
 	
 	private void initRemoveTextField() {
@@ -401,6 +487,17 @@ public class AdminPanel extends JPanel{
     	int quantityInt = Integer.parseInt(quantity);
     	int priceInt = Integer.parseInt(price);
 		this.s.addStonksData(manufacturer, model, quantityInt, priceInt);
+	}
+
+	private void modifyStockData() {
+		String modifyStringID = modifyStockIDTextField.getText();
+		int modifyID = Integer.parseInt(modifyStringID);	
+		String modifyMan = modifyStockManufacturerTextField.getText();
+		String modifyMod = modifyStockModelTextField.getText();
+		String modifyQnt = modifyStockQuantityTextField.getText();
+		String modifyPrice = modifyStockPriceTextField.getText();
+
+		this.s.tryModifyStonks(modifyID, modifyMan, modifyMod, modifyQnt, modifyPrice);
 	}
 	
 	private void revalidare() {
