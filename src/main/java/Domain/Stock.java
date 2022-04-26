@@ -64,6 +64,4 @@ public class Stock {
         return "Stock{" + "id=" + id + ", manufacturer=" + manufacturer + ","
         		+ " model=" + model + ", quantity=" + quantity +  " price=" + price +'}';
     }
-	
-	
 }

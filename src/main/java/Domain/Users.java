@@ -5,6 +5,17 @@ public class Users {
 	String password;
 	int admin_priviliges;
 	
+	public Users() {
+		
+	}
+
+	public Users(int id, String username, String password, int admin_privileges) {
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.admin_priviliges = admin_privileges;
+	}
+
 	public int getID() {
 		return id;
 	}
@@ -39,7 +50,7 @@ public class Users {
 	
 	@Override
     public String toString() {
-        return "User{" + "id=" + id + ", username=" + username + ", "
+        return "Users{" + "id=" + id + ", username=" + username + ", "
         		+ "password=" + password + ", admin_priviliges=" + admin_priviliges + '}';
     }
 }

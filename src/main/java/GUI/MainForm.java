@@ -17,10 +17,15 @@ public class MainForm extends JFrame {
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		super.setVisible(true);
 		super.setSize(900, 600);
+		super.setResizable(false);
 		super.setLocationRelativeTo(null);
 		
 		p = new LoginPanel(s);
 		this.add(p);
 		this.getContentPane().revalidate();
+	}
+
+	public void fcn() {
+
 	}
 }

@@ -1,16 +1,13 @@
 package GUI;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.BorderLayout;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BoxLayout;
+import javax.swing.GroupLayout ;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -30,15 +27,23 @@ public class AdminPanel extends JPanel{
 	Service s;
 	
 	String[] tableHead = {"ID", "Manufacturer", "Model", "Quantity", "Price"};
+	String[] tableHeadUsers = {"ID", "Username", "Password", "Admin Privileges"};
 	
 	JTable stockTable;
 	TableColumn tableColumnManufacturer;
 	TableColumn tableColumnModel;
 	TableColumn tableColumnQuantity;
 	TableColumn tableColumnPrice;
+
+	JTable userTable;
+	TableColumn tableColumnUser;
+	TableColumn tableColumnPass;
+	TableColumn tableColumnAdmPriv;
 	
 	JTextField searchTextField;
+	JTextField searchUserTextField;
 	JTextField removeTextField;
+	JTextField removeUserTextField;
 
 	JTextField addStockManufacturerTextField;
 	JTextField addStockModelTextField;
@@ -50,9 +55,16 @@ public class AdminPanel extends JPanel{
 	JTextField modifyStockModelTextField;
 	JTextField modifyStockQuantityTextField;
 	JTextField modifyStockPriceTextField;
+
+	JTextField modifyUserIDTextField;
+	JTextField modifyUserUsernameTextField;
+	JTextField modifyUserPasswordTextField;
+	JTextField modifyUserAdmPrvTextField;
 	
     JLabel searchLabel;
+	JLabel searchUserLabel;
 	JLabel removeLabel;
+	JLabel removeUserLabel;
 	
     JLabel addStockManufacturerLabel;
 	JLabel addStockModelLabel;
@@ -65,22 +77,35 @@ public class AdminPanel extends JPanel{
 	JLabel modifyStockQuantityLabel;
 	JLabel modifyStockPriceLabel;
 	
+	JLabel modifyUserIDLabel;
+	JLabel modifyUserUsernameLabel;
+	JLabel modifyUserPasswordLabel;
+	JLabel modifyUserAdmPrvLabel;
 	
 	JButton backButton;
 	JButton exitButton;
 	JButton stockAddButton;
     JButton stockModifyButton;
+	JButton userModifyButton;
+	JButton repairAIIndex; //repair auto increment index
 	
 	JMenuBar menuBar;
 	JMenu stockMenu;
 	JMenu userMenu;
+	JMenu optionMenu;
+	JMenu orderMenu;
 	JMenuItem stockAdd, stockModify, stockSearch, stockDelete;
 	JMenuItem userModify, userSearch, userDelete;
+	JMenuItem optionBack, optionExit;
+	JMenuItem orderAdd, orderModify, orderSearch, orderDelete;
+
+	GroupLayout layout;
 	
 	public AdminPanel(Service s) {
 		super();
 		this.s = s;
-		super.setLayout(new FlowLayout());
+		super.setLayout(null);
+		super.setVisible(true);
 		super.setBackground(Color.DARK_GRAY);
 		initJMenu();
 		
@@ -91,10 +116,7 @@ public class AdminPanel extends JPanel{
 	private void loadStockSearchPanel() {
 		initSearchTextField();
 		initStockTable();
-		loadAllDataInTable();
-		
-		initBackButton();
-		initExitButton();
+		loadAllDataInStockTable();
 
 		revalidare();
 	}
@@ -102,6 +124,8 @@ public class AdminPanel extends JPanel{
 	private void loadStockAddPanel() {
 		initStockAddTextField();
 		initStockAddButton();
+		initStockTable();
+		loadAllDataInStockTable();
 
 		revalidare();
 	}
@@ -109,20 +133,56 @@ public class AdminPanel extends JPanel{
 	private void loadStockModifyPanel() {
 		initSearchTextField();
 		initStockTable();
-		loadAllDataInTable();
+		loadAllDataInStockTable();
 		initModifyTextField();
 
 		revalidare();
 	}
 	
 	private void loadStockDeletePanel() {
+		initSearchTextField();
 		initRemoveTextField();
 		initStockTable();
-		loadAllDataInTable();
+		loadAllDataInStockTable();
 		
-		initBackButton();
-		initExitButton();
 		revalidare();
+	}
+
+	private void loadUserModifyPanel() {
+		initModifyUserTextField();
+		initUserSearchTextField();
+		initUserTable();
+		loadAllDataInUserTable();
+
+	}
+
+	private void loadUserSearchPanel() {
+		initUserSearchTextField();
+		initUserTable();
+		loadAllDataInUserTable();
+	}
+
+	private void loadUserDeletePanel() {
+		initRemoveUserTextField();
+		initUserSearchTextField();
+		initUserTable();
+		loadAllDataInUserTable();
+	}
+
+	private void loadOrderAddPanel() {
+		System.out.println("*");
+	}
+
+	private void loadOrderModifyPanel() {
+		System.out.println("*");
+	}
+
+	private void loadOrderSearchPanel() {
+		System.out.println("*");
+	}
+
+	private void loadOrderDeletePanel() {
+		System.out.println("*");
 	}
 	
 	private void removePanel() {
@@ -162,9 +222,90 @@ public class AdminPanel extends JPanel{
 		userMenu.add(userDelete);
 		
 		menuBar.add(userMenu);
+
+		orderMenu = new JMenu("Comenzi");
+		orderMenu.setForeground(Color.white);
+		orderMenu.setBackground(Color.black);
+
+		orderAdd = new JMenuItem("Adaugare Comenzia");
+		orderModify = new JMenuItem("Modificare Comenzi");
+		orderSearch = new JMenuItem("Cautare Comenzi");
+		orderDelete = new JMenuItem("Stergere Comenzi");
+
+		orderMenu.add(orderAdd);
+		orderMenu.add(orderModify);
+		orderMenu.add(orderSearch);
+		orderMenu.add(orderDelete);
+
+		menuBar.add(orderMenu);
+
+		optionMenu = new JMenu("Options");
 		
+		optionMenu.setForeground(Color.white);
+		optionMenu.setBackground(Color.black);
+
+		optionBack = new JMenuItem("Back");
+		optionExit = new JMenuItem("Exit");
+
+		optionMenu.add(optionBack);
+		optionMenu.add(optionExit);
+
+		menuBar.add(optionMenu);
+
+
+		menuBar.setBounds(0, 0, 900, 30);
 		this.add(menuBar);	
 		
+		optionBack.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				close();
+			}
+		});
+
+		optionExit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+
+		orderAdd.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removePanel();
+				loadOrderAddPanel();
+			}
+		});
+
+		orderSearch.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removePanel();
+				loadOrderSearchPanel();
+			}
+		});
+
+		orderModify.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removePanel();
+				loadOrderModifyPanel();
+			}
+		});
+
+		orderDelete.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removePanel();
+				loadOrderDeletePanel();
+			}
+		});
+
 		stockAdd.addActionListener(new ActionListener() {
 
 			@Override
@@ -200,8 +341,96 @@ public class AdminPanel extends JPanel{
 				loadStockDeletePanel();
 			}
 		});
+
+		userModify.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removePanel();
+				loadUserModifyPanel();
+			}
+		});
+
+		userDelete.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removePanel();
+				loadUserDeletePanel();
+			}
+		});
+
+		userSearch.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removePanel();
+				loadUserSearchPanel();
+			}
+		});
 	}
 	
+	private void initModifyUserTextField() {
+		modifyUserIDLabel = new JLabel("Id to modify");
+		modifyUserIDLabel.setForeground(Color.white);
+		modifyUserIDTextField = new JTextField();
+		modifyUserIDTextField.setForeground(Color.white);
+		modifyUserIDTextField.setBackground(Color.DARK_GRAY);
+
+		modifyUserUsernameLabel = new JLabel("Username");
+		modifyUserUsernameLabel.setForeground(Color.white);
+		modifyUserUsernameTextField = new JTextField();
+		modifyUserUsernameTextField.setForeground(Color.white);
+		modifyUserUsernameTextField.setBackground(Color.DARK_GRAY);
+
+		modifyUserPasswordLabel = new JLabel("Password");
+		modifyUserPasswordLabel.setForeground(Color.white);
+		modifyUserPasswordTextField = new JTextField();
+		modifyUserPasswordTextField.setForeground(Color.white);
+		modifyUserPasswordTextField.setBackground(Color.DARK_GRAY);
+
+		modifyUserAdmPrvLabel = new JLabel("Adm Priv");
+		modifyUserAdmPrvLabel.setForeground(Color.white);
+		modifyUserAdmPrvTextField = new JTextField();
+		modifyUserAdmPrvTextField.setForeground(Color.white);
+		modifyUserAdmPrvTextField.setBackground(Color.DARK_GRAY);
+
+		userModifyButton = new JButton("Apply");
+        userModifyButton.setVisible(true);
+        userModifyButton.setBackground(Color.DARK_GRAY);
+        userModifyButton.setForeground(Color.white);
+
+		userModifyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                modifyUserData();
+				revalidareUserTable();
+            }
+        });
+
+		modifyUserIDLabel.setBounds(20, 90, 100, 20);
+		modifyUserUsernameLabel.setBounds(20, 120, 100, 20);
+		modifyUserPasswordLabel.setBounds(20, 150, 100, 20);
+		modifyUserAdmPrvLabel.setBounds(20, 180, 100, 20);
+
+		modifyUserIDTextField.setBounds(150, 90, 100, 20);
+		modifyUserUsernameTextField.setBounds(150, 120, 100, 20);
+		modifyUserPasswordTextField.setBounds(150, 150, 100, 20);
+		modifyUserAdmPrvTextField.setBounds(150, 180, 100, 20);
+		userModifyButton.setBounds(150, 210, 100, 20);
+
+		this.add(modifyUserIDLabel);
+		this.add(modifyUserUsernameLabel);
+		this.add(modifyUserPasswordLabel);
+		this.add(modifyUserAdmPrvLabel);
+
+		this.add(modifyUserIDTextField);
+		this.add(modifyUserUsernameTextField);
+		this.add(modifyUserPasswordTextField);
+		this.add(modifyUserAdmPrvTextField);
+		this.add(userModifyButton);
+	}
+
 	private void initModifyTextField() {
 		modifyStockIDLabel = new JLabel("Id to modify");
 		modifyStockIDLabel.setForeground(Color.white);
@@ -233,7 +462,7 @@ public class AdminPanel extends JPanel{
         modifyStockPriceTextField.setForeground(Color.white);
         modifyStockPriceTextField.setBackground(Color.DARK_GRAY);
 
-        stockModifyButton = new JButton("Dew it");
+        stockModifyButton = new JButton("Apply");
         stockModifyButton.setVisible(true);
         stockModifyButton.setBackground(Color.DARK_GRAY);
         stockModifyButton.setForeground(Color.white);
@@ -242,15 +471,22 @@ public class AdminPanel extends JPanel{
             @Override
             public void actionPerformed(ActionEvent e) {
                 modifyStockData();
+				revalidareTabel();
             }
         });
 
-		modifyStockIDTextField.setPreferredSize(new Dimension(100, 20));
-		modifyStockManufacturerTextField.setPreferredSize(new Dimension(100, 20));
-		modifyStockModelTextField.setPreferredSize(new Dimension(100, 20));
-		modifyStockQuantityTextField.setPreferredSize(new Dimension(100, 20));
-		modifyStockPriceTextField.setPreferredSize(new Dimension(100, 20));
-		
+		modifyStockIDLabel.setBounds(20, 90, 100, 20);
+		modifyStockManufacturerLabel.setBounds(20,120, 100, 20);
+		modifyStockModelLabel.setBounds(20, 150, 100, 20);
+		modifyStockQuantityLabel.setBounds(20, 180, 100, 20);
+		modifyStockPriceLabel.setBounds(20, 210, 100, 20);
+
+		modifyStockIDTextField.setBounds(150, 90, 100, 20);
+		modifyStockManufacturerTextField.setBounds(150,120, 100, 20);
+		modifyStockModelTextField.setBounds(150, 150, 100, 20);
+		modifyStockQuantityTextField.setBounds(150, 180, 100, 20);
+		modifyStockPriceTextField.setBounds(150, 210, 100, 20);
+		stockModifyButton.setBounds(150, 240, 100, 20);
 
         this.add(modifyStockIDLabel);
         this.add(modifyStockIDTextField);
@@ -277,15 +513,59 @@ public class AdminPanel extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				removeDataFromID();
+				revalidareTabel();
 				JOptionPane.showMessageDialog(null, "Produsul cu id-ul "+id+" a fost sters cu succes!");
-				revalidare();
 			}
 		});
-		removeTextField.setPreferredSize(new Dimension(100, 20));
+		//removeTextField.setPreferredSize(new Dimension(100, 20));
+		removeLabel.setBounds(20, 90, 100, 20);
+		removeTextField.setBounds(150, 90, 100, 20);
 		this.add(removeLabel);
 		this.add(removeTextField);
 	}
 	
+	private void initRemoveUserTextField() {
+		removeUserLabel = new JLabel("Id to remove");
+		removeUserTextField = new JTextField();
+		removeUserLabel.setForeground(Color.white);
+		removeUserTextField.setForeground(Color.white);
+		removeUserTextField.setBackground(Color.DARK_GRAY);
+		String id = removeUserTextField.getText();
+		removeUserTextField.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removeUserDataFromID();
+				revalidareUserTable();
+				JOptionPane.showMessageDialog(null, "Utilizatorul cu id-ul "+id+" a fost sters cu succes!");
+			}
+		});
+		//removeTextField.setPreferredSize(new Dimension(100, 20));
+		removeUserLabel.setBounds(20, 90, 100, 20);
+		removeUserTextField.setBounds(150, 90, 100, 20);
+		this.add(removeUserLabel);
+		this.add(removeUserTextField);
+	}
+	
+	private void initUserSearchTextField() {
+		searchUserLabel = new JLabel("Search");
+		searchUserTextField = new JTextField();
+		searchUserLabel.setForeground(Color.white);
+		searchUserTextField.setForeground(Color.white);
+		searchUserTextField.setBackground(Color.DARK_GRAY);
+		searchUserTextField.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				loadAllSearchedUsersInTable();
+			}
+			
+		});
+		searchUserLabel.setBounds(20, 60, 100, 20);
+		searchUserTextField.setBounds(150, 60, 100, 20);
+		this.add(searchUserLabel);
+		this.add(searchUserTextField);
+	}
+
 	private void initSearchTextField() {
 		searchLabel = new JLabel("Search");
 		searchTextField = new JTextField();
@@ -300,31 +580,28 @@ public class AdminPanel extends JPanel{
 			}
 			
 		});
-		searchTextField.setPreferredSize(new Dimension(100, 20));
-		this.add(searchLabel);
-		this.add(searchTextField);
+		searchLabel.setBounds(20, 60, 100, 20);
+		searchTextField.setBounds(150, 60, 100, 20);
+		this.add(searchLabel, BorderLayout.PAGE_START);
+		this.add(searchTextField, BorderLayout.PAGE_START);
 	}
 	
 	private void initStockAddTextField() {
 		addStockManufacturerTextField = new JTextField();
 		addStockManufacturerTextField.setForeground(Color.white);
 		addStockManufacturerTextField.setBackground(Color.DARK_GRAY);
-		addStockManufacturerTextField.setPreferredSize(new Dimension(100, 20));
-		
+
 		addStockModelTextField = new JTextField();
 		addStockModelTextField.setForeground(Color.white);
 		addStockModelTextField.setBackground(Color.DARK_GRAY);
-		addStockModelTextField.setPreferredSize(new Dimension(100, 20));
 		
 		addStockQuantityTextField = new JTextField();
 		addStockQuantityTextField.setForeground(Color.white);
 		addStockQuantityTextField.setBackground(Color.DARK_GRAY);
-		addStockQuantityTextField.setPreferredSize(new Dimension(100, 20));
 		
 		addStockPriceTextField = new JTextField();
 		addStockPriceTextField.setForeground(Color.white);
 		addStockPriceTextField.setBackground(Color.DARK_GRAY);
-		addStockPriceTextField.setPreferredSize(new Dimension(100, 20));
 		
 		addStockManufacturerLabel = new JLabel("Producator");
 		addStockManufacturerLabel.setForeground(Color.white);
@@ -337,7 +614,17 @@ public class AdminPanel extends JPanel{
 		
 		addStockPriceLabel = new JLabel("Pret");
 		addStockPriceLabel.setForeground(Color.white);
-		
+
+		addStockManufacturerLabel.setBounds(20, 60, 100, 20);
+		addStockModelLabel.setBounds(20, 90, 100, 20);
+		addStockQuantityLabel.setBounds(20, 120, 100, 20);
+		addStockPriceLabel.setBounds(20, 150, 100, 20);
+
+		addStockManufacturerTextField.setBounds(150, 60, 100, 20);
+		addStockModelTextField.setBounds(150, 90, 100, 20);
+		addStockQuantityTextField.setBounds(150, 120, 100, 20);
+		addStockPriceTextField.setBounds(150, 150, 100, 20);
+
 		this.add(addStockManufacturerLabel);
 		this.add(addStockManufacturerTextField);
 		this.add(addStockModelLabel);
@@ -352,58 +639,62 @@ public class AdminPanel extends JPanel{
 		stockAddButton = new JButton("Adaugare");
 		stockAddButton.setForeground(Color.white);
 		stockAddButton.setBackground(Color.DARK_GRAY);
-		stockAddButton.setPreferredSize(new Dimension(80, 20));
+		stockAddButton.setBounds(150, 180, 100, 20);
 		stockAddButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				addStockData();
+				revalidareTabel();
 				JOptionPane.showMessageDialog(null, "Produsul a fost adaugat in baza de date!");
 			}
 		});
 		this.add(stockAddButton);
-		
 	}
-	
-	private void initBackButton() {
-		backButton = new JButton("<");
-		backButton.setPreferredSize(new Dimension(50, 50));
-		backButton.setLocation(10, 10);
-		backButton.setVisible(true);
-		backButton.setBackground(Color.DARK_GRAY);
-		backButton.setForeground(Color.white);
-		
-		backButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				close();
-			}
-			
-		});
 
-		this.add(backButton);
-	}
-	
-	private void initExitButton() {
-		exitButton = new JButton("X");
-		exitButton.setPreferredSize(new Dimension(50, 50));
-		exitButton.setLocation(10, 10);
-		exitButton.setVisible(true);
-		exitButton.setBackground(Color.DARK_GRAY);
-		exitButton.setForeground(Color.white);
-		
-		exitButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-			}
-			
-		});
+	private void initUserTable() {
+		userTable = new JTable();
+		userTable.setForeground(Color.white);
+		userTable.setBackground(Color.DARK_GRAY);
+		tableColumnUser = new TableColumn();
+		tableColumnPass = new TableColumn();
+		tableColumnAdmPriv = new TableColumn();
 
-		this.add(exitButton);
+		tableColumnUser.setHeaderValue("User");
+		userTable.addColumn(tableColumnUser);
+		tableColumnPass.setHeaderValue("Pass");
+		userTable.addColumn(tableColumnPass);
+		tableColumnAdmPriv.setHeaderValue("Admin Privileges");
+		userTable.addColumn(tableColumnAdmPriv);
+		
+		//stockTable.setPreferredSize(new Dimension(600, 480));
+		userTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
+		
+		JScrollPane sp = new JScrollPane(userTable);
+		//sp.setPreferredSize(new Dimension(600, 300));
+		sp.setBounds(280, 60, 580, 480);
+		this.add(sp);
+		this.repaint();
+		this.revalidate();
 	}
-	
+
+	private void loadAllDataInUserTable() {
+		//emptyTableData();
+		//DefaultTableModel d = (DefaultTableModel) stockTable.getModel();
+		DefaultTableModel d = new DefaultTableModel();
+		d.addColumn(tableHeadUsers[0]);
+		d.addColumn(tableHeadUsers[1]);
+		d.addColumn(tableHeadUsers[2]);
+		d.addColumn(tableHeadUsers[3]);
+		int i = 0;
+		for(String[] s: this.s.userGetAllData() ) {
+			d.insertRow(i, s);
+			i ++;
+		}
+		userTable.setModel(d);
+		userTable.revalidate();
+		userTable.repaint();
+	}
+
 	private void initStockTable() {
 		stockTable = new JTable();
 		stockTable.setForeground(Color.white);
@@ -422,18 +713,19 @@ public class AdminPanel extends JPanel{
 		tableColumnPrice.setHeaderValue("Price");
 		stockTable.addColumn(tableColumnPrice);
 		
-		stockTable.setPreferredSize(new Dimension(600, 300));
+		//stockTable.setPreferredSize(new Dimension(600, 480));
 		stockTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
 		
 		JScrollPane sp = new JScrollPane(stockTable);
-		sp.setPreferredSize(new Dimension(600, 300));
+		//sp.setPreferredSize(new Dimension(600, 300));
+		sp.setBounds(280, 60, 580, 480);
 		this.add(sp);
 		this.repaint();
 		this.revalidate();
 		
 	}
 	
-	private void loadAllDataInTable() {
+	private void loadAllDataInStockTable() {
 		//emptyTableData();
 		//DefaultTableModel d = (DefaultTableModel) stockTable.getModel();
 		DefaultTableModel d = new DefaultTableModel();
@@ -455,6 +747,24 @@ public class AdminPanel extends JPanel{
 		stockTable.repaint();
 	}
 	
+	private void loadAllSearchedUsersInTable() {
+		String s = searchUserTextField.getText();
+		DefaultTableModel d = new DefaultTableModel();
+		d.addColumn(tableHeadUsers[0]);
+		d.addColumn(tableHeadUsers[1]);
+		d.addColumn(tableHeadUsers[2]);
+		d.addColumn(tableHeadUsers[3]);
+		int i = 0;
+		for(String[] s1: this.s.userSearchData(s) ) {
+			d.insertRow(i, s1);
+			i ++;
+		}
+		userTable.setModel(d);
+		userTable.setBackground(Color.DARK_GRAY);
+		userTable.revalidate();
+		userTable.repaint();
+	}
+
 	private void loadAllSearchedDataInTable() {
 		String s = searchTextField.getText();
 		DefaultTableModel d = new DefaultTableModel();
@@ -473,10 +783,16 @@ public class AdminPanel extends JPanel{
 		stockTable.revalidate();
 		stockTable.repaint();
 	}
+
 	
 	private void removeDataFromID() {
 		String removeString = removeTextField.getText();
 		this.s.removeDataWithID(removeString);
+	}
+
+	private void removeUserDataFromID() {
+		String removeString = removeUserTextField.getText();
+		this.s.removeUserDataWithID(removeString);
 	}
 	
 	private void addStockData() {
@@ -487,6 +803,17 @@ public class AdminPanel extends JPanel{
     	int quantityInt = Integer.parseInt(quantity);
     	int priceInt = Integer.parseInt(price);
 		this.s.addStonksData(manufacturer, model, quantityInt, priceInt);
+	}
+
+	private void modifyUserData() {
+		String modifyStringID = modifyUserIDTextField.getText();
+		int modifyID = Integer.parseInt(modifyStringID);
+		String modifyUsername = modifyUserUsernameTextField.getText();
+		String modifyPassword = modifyUserPasswordTextField.getText();
+		String modifyAdmPriv = modifyUserAdmPrvTextField.getText();
+		System.out.println("this is the adm priv text*" + modifyAdmPriv + "*");
+
+		this.s.tryModifyUsers(modifyID, modifyUsername, modifyPassword, modifyAdmPriv);
 	}
 
 	private void modifyStockData() {
@@ -504,10 +831,29 @@ public class AdminPanel extends JPanel{
 		this.revalidate();
 		this.repaint();
 	}
+
+	private void revalidareTabel() {
+		emptyTableData();
+		loadAllDataInStockTable();
+		this.revalidate();
+		this.repaint();
+	}
 		
 	private void emptyTableData() {
 		DefaultTableModel d = new DefaultTableModel();
 		stockTable.setModel(d);
+	}
+
+	private void revalidareUserTable() {
+		emptyUserTableData();
+		loadAllDataInUserTable();
+		this.revalidate();
+		this.repaint();
+	}
+		
+	private void emptyUserTableData() {
+		DefaultTableModel d = new DefaultTableModel();
+		userTable.setModel(d);
 	}
 	
 	private void close() {

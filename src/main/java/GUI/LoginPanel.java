@@ -1,21 +1,16 @@
 			package GUI;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.border.TitledBorder;
 
 import Service.Service;
 
@@ -81,7 +76,6 @@ public class LoginPanel extends JPanel{
 					else if(privileges == 2) closeAndOpenUserForm();
 					
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(null, e1.getMessage());
 				}
@@ -107,7 +101,6 @@ public class LoginPanel extends JPanel{
 	        	try {
 					s.tryRegister(username, password);
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(null, e1.getMessage());
 				}
@@ -137,7 +130,6 @@ public class LoginPanel extends JPanel{
 					else if(privileges == 2) closeAndOpenUserForm();
 					
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(null, e1.getMessage());
 				}
