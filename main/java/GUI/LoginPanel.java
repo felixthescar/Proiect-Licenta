@@ -15,6 +15,8 @@ import javax.swing.JTextField;
 import Service.Service;
 
 public class LoginPanel extends JPanel{
+
+	public static String whoIsLoggedIn;
 	
 	public static String username;
 	public static String password;
@@ -66,6 +68,7 @@ public class LoginPanel extends JPanel{
 		passwordText.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 	        	String username = usernameText.getText();
+				whoIsLoggedIn = username;
 	        	String password = new String(passwordText.getPassword());
 	        	
 	        	try {
