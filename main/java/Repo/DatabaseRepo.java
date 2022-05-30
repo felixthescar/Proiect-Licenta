@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Domain.Sales;
 import Domain.Stock;
 import Domain.Users;
 
@@ -21,6 +22,56 @@ public class DatabaseRepo {
     public DatabaseRepo() {
     	
     }
+
+	public void addOrder(int idPrd, String username, String adr, String dataC, String dataL, int status, int cant, int pret) {
+		con = getConnection();
+    	try {
+    		String query =  "INSERT INTO sales (id_produs, user, adresa, data_comandare, data_livrare, status_comanda, cantitate, pret) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+    		ps = con.prepareStatement(query);
+    		ps.setInt(1, idPrd);
+    		ps.setString(2, username);
+    		ps.setString(3, adr);
+    		ps.setDate(4, java.sql.Date.valueOf(dataC));
+    		ps.setDate(5, java.sql.Date.valueOf(dataL));
+    		ps.setInt(6, status);
+    		ps.setInt(7, cant);
+    		ps.setInt(8, pret*cant);
+    		ps.execute();
+			System.out.println(query);
+    	} catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+	}
+
+	public int getPriceOfItem(String ID){
+		int price = 10000;
+		int id = Integer.parseInt(ID);
+		con = getConnection();
+    	try {
+    		String query =  "SELECT * FROM stonks WHERE id=?;";
+    		ps = con.prepareStatement(query);
+    		ps.setInt(1, id);
+			rs = ps.executeQuery();
+			if(rs.next()) {
+				price = rs.getInt("price");
+			}
+    	} catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+		return price;
+	}
     
     public void removeStonkWithID(String id) {
     	con = getConnection();
@@ -28,6 +79,44 @@ public class DatabaseRepo {
     		String query =  "DELETE FROM stonks WHERE id=?;";
     		ps = con.prepareStatement(query);
     		ps.setString(1, id);
+    		ps.execute();
+    		System.out.println(id + " deleted");
+    	} catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+	public void removeUserWithID(String id) {
+    	con = getConnection();
+    	try {
+    		String query =  "DELETE FROM accounts WHERE id=?;";
+    		ps = con.prepareStatement(query);
+    		ps.setString(1, id);
+    		ps.execute();
+    		System.out.println(id + " deleted");
+    	} catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+	public void removeSalesData(int id) {
+    	con = getConnection();
+    	try {
+    		String query =  "DELETE FROM sales WHERE id=?;";
+    		ps = con.prepareStatement(query);
+    		ps.setInt(1, id);
     		ps.execute();
     		System.out.println(id + " deleted");
     	} catch (Exception e) {
@@ -50,8 +139,8 @@ public class DatabaseRepo {
             ps.setString(2, password);
             rs = ps.executeQuery();
             if(rs.next()) {
-            	if(rs.getInt("admin_privileges")==1) return 1;
-            	else if(rs.getInt("admin_privileges")==0) return 2;
+            	if(rs.getInt("admin_privileges")==2) return 1;
+            	else if(rs.getInt("admin_privileges")==1) return 2;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -68,7 +157,7 @@ public class DatabaseRepo {
     public void addUser(String username, String password) {
     	con = getConnection();
     	try {
-    		String query =  "INSERT INTO accounts (username, password) VALUES (?, ?)";
+    		String query =  "INSERT INTO accounts (username, password, admin_privileges) VALUES (?, ?, 1)";
     		ps = con.prepareStatement(query);
     		ps.setString(1, username);
     		ps.setString(2, password);
@@ -119,35 +208,6 @@ public class DatabaseRepo {
         }
         return c;
     }
-//
-	//public void repairID(String table) {
-		//con = getConnection();
-    	//try {
-			//String query1 = "SET  @num := 0";
-			//ps = con.prepareStatement(query1);
-			//ps.addBatch();
-			//String query2 = "UPDATE ? SET id = @num := (@num+1)";
-			//ps = con.prepareStatement(query2);
-			//ps.setString(1, table);
-			//ps.addBatch();
-			//String query3 = "ALTER TABLE ? AUTO_INCREMENT =1";
-			//ps = con.prepareStatement(query3);
-			//ps.setString(1, table);
-			//System.out.println(ps);
-			//ps.addBatch();
-//
-			//ps.executeBatch();
-			//System.out.println("Remade ids");
-    	//} catch (Exception e) {
-            //e.printStackTrace();
-        //} finally {
-            //try {
-                //con.close();
-            //} catch (SQLException ex) {
-                //ex.printStackTrace();
-            //}
-        //}
-	//}
     
     public List<Stock> getAllStocks() {
     	List<Stock> l = new ArrayList<>();
@@ -179,6 +239,81 @@ public class DatabaseRepo {
 			e.printStackTrace();
 		}
     	return l;
+    }
+
+	public List<Sales> getAllSales() {
+    	List<Sales> l = new ArrayList<>();
+    	con = getConnection();
+    	String query = "select * from sales";
+    	try {
+			ps = con.prepareStatement(query);
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				l.add(new Sales(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getInt(7), rs.getInt(8), rs.getInt(9)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	return l;
+    }
+
+	public void modifyUserWithID (int id, String usr, String pass, int adm_prv) {
+    	con = getConnection();
+    	try {
+			String query = "UPDATE accounts SET ";//manufacturer=?, model=?, quantity=?, price=? WHERE id=?;";
+			boolean firstNull = true;
+			boolean isUsr = true;
+			boolean isPass = true;
+			boolean isAdm = true;
+			if(!usr.equals("")) {
+				query+="username=?";
+				firstNull = false;
+			}else {
+				isUsr = false;
+			}
+			if(!pass.equals("") && !firstNull) {
+				query+=", password=?";
+			} else if (!pass.equals("") && firstNull){
+				query+="password=?";
+				firstNull = false;
+			} else {
+				isPass = false;
+			}
+			if(adm_prv!=0 && !firstNull) {
+				query+=", admin_privileges=?";
+			} else if(adm_prv!=0 && firstNull){
+				query+="admin_privileges=?";
+			} else {
+				isAdm = false;
+			}
+			query+=" WHERE id=?;";
+			System.out.println(query);
+			ps = con.prepareStatement(query);
+			int cnt = 1;
+			if(isUsr) {
+				ps.setString(cnt, usr);
+				cnt++;
+			}
+			if(isPass) {
+				ps.setString(cnt, pass);
+				cnt++;
+			}
+			if(isAdm) {
+				ps.setInt(cnt, adm_prv);
+				cnt++;
+			}
+			ps.setInt(cnt, id);
+			ps.execute();
+			System.out.println("modificat ficat ficat");
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} finally {
+    		try {
+    			con.close();
+    		} catch (SQLException ex) {
+    			ex.printStackTrace();
+    		}
+    	}
     }
 
 	public void modifyStonkWithID (int id, String man, String mod, int qnt, int price) {
@@ -241,12 +376,6 @@ public class DatabaseRepo {
 				cnt++;
 			}
 			ps.setInt(cnt, id);
-
-			//ps.setString(1, man);
-			//ps.setString(2, mod);
-			//ps.setInt(3, qnt);
-			//ps.setInt(4, price);
-			//ps.setInt(5, id);
 			ps.execute();
 			System.out.println("modificat ficat ficat");
     	} catch (Exception e) {
@@ -260,6 +389,71 @@ public class DatabaseRepo {
     	}
     }
     
+	public List<Users> searchUsersProgressive(String search) {
+    	List<Users> l = new ArrayList<>();
+    	con = getConnection();
+    	String q1 = "(username like ? or password like ? or admin_privileges like ?) ";
+    	try {
+    		String query = "select * from accounts where 1=1 ";
+    		for(String s: search.split(" ")) {
+				System.out.println(s);
+        		query+="and ";
+        		query+=q1;
+        	}
+			ps = con.prepareStatement(query);
+			int i = 0;
+			for(String s: search.split(" ")) {
+				ps.setString(1+i*4, "%"+s+"%");
+				ps.setString(2+i*4, "%"+s+"%");
+	            ps.setString(3+i*4, "%"+s+"%");
+	            i++;
+        	}
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				l.add(new Users(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	
+    	return l;
+    }
+
+	public List<Sales> searchSalesProgressive(String search) {
+		List<Sales> l = new ArrayList<>();
+    	con = getConnection();
+    	String q1 = "(id_produs like ? or user like ? or adresa like ? or data_comandare like ? or data_livrare like ? or status_comanda like ? or cantitate like ? or pret like ?) ";
+    	try {
+    		String query = "select * from sales where 1=1 ";
+    		for(String s: search.split(" ")) {
+				System.out.println(s);
+        		query+="and ";
+        		query+=q1;
+        	}
+			ps = con.prepareStatement(query);
+			int i = 0;
+			for(String s: search.split(" ")) {
+				ps.setString(1+i*7, "%"+s+"%");
+				ps.setString(2+i*7, "%"+s+"%");
+	            ps.setString(3+i*7, "%"+s+"%");
+	            ps.setString(4+i*7, "%"+s+"%");
+	            ps.setString(5+i*7, "%"+s+"%");
+	            ps.setString(6+i*7, "%"+s+"%");
+	            ps.setString(7+i*7, "%"+s+"%");
+				
+	            i++;
+        	}
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				l.add(new Sales(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getInt(7), rs.getInt(8), rs.getInt(9)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	
+    	return l;
+    }
+
     public List<Stock> searchStocksProgressive(String search) {
     	List<Stock> l = new ArrayList<>();
     	con = getConnection();
