@@ -50,7 +50,7 @@ public class Users {
 	
 	@Override
     public String toString() {
-        return "User{" + "id=" + id + ", username=" + username + ", "
+        return "Users{" + "id=" + id + ", username=" + username + ", "
         		+ "password=" + password + ", admin_priviliges=" + admin_priviliges + '}';
     }
 }
