@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Domain.Sales;
 import Domain.Stock;
 import Domain.Users;
 
@@ -21,6 +22,56 @@ public class DatabaseRepo {
     public DatabaseRepo() {
     	
     }
+
+	public void addOrder(int idPrd, String username, String adr, String dataC, String dataL, int status, int cant, int pret) {
+		con = getConnection();
+    	try {
+    		String query =  "INSERT INTO sales (id_produs, user, adresa, data_comandare, data_livrare, status_comanda, cantitate, pret) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+    		ps = con.prepareStatement(query);
+    		ps.setInt(1, idPrd);
+    		ps.setString(2, username);
+    		ps.setString(3, adr);
+    		ps.setDate(4, java.sql.Date.valueOf(dataC));
+    		ps.setDate(5, java.sql.Date.valueOf(dataL));
+    		ps.setInt(6, status);
+    		ps.setInt(7, cant);
+    		ps.setInt(8, pret*cant);
+    		ps.execute();
+			System.out.println(query);
+    	} catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+	}
+
+	public int getPriceOfItem(String ID){
+		int price = 10000;
+		int id = Integer.parseInt(ID);
+		con = getConnection();
+    	try {
+    		String query =  "SELECT * FROM stonks WHERE id=?;";
+    		ps = con.prepareStatement(query);
+    		ps.setInt(1, id);
+			rs = ps.executeQuery();
+			if(rs.next()) {
+				price = rs.getInt("price");
+			}
+    	} catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+		return price;
+	}
     
     public void removeStonkWithID(String id) {
     	con = getConnection();
@@ -47,6 +98,25 @@ public class DatabaseRepo {
     		String query =  "DELETE FROM accounts WHERE id=?;";
     		ps = con.prepareStatement(query);
     		ps.setString(1, id);
+    		ps.execute();
+    		System.out.println(id + " deleted");
+    	} catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+	public void removeSalesData(int id) {
+    	con = getConnection();
+    	try {
+    		String query =  "DELETE FROM sales WHERE id=?;";
+    		ps = con.prepareStatement(query);
+    		ps.setInt(1, id);
     		ps.execute();
     		System.out.println(id + " deleted");
     	} catch (Exception e) {
@@ -164,6 +234,22 @@ public class DatabaseRepo {
 			rs = ps.executeQuery();
 			while(rs.next()) {
 				l.add(new Users(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	return l;
+    }
+
+	public List<Sales> getAllSales() {
+    	List<Sales> l = new ArrayList<>();
+    	con = getConnection();
+    	String query = "select * from sales";
+    	try {
+			ps = con.prepareStatement(query);
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				l.add(new Sales(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getInt(7), rs.getInt(8), rs.getInt(9)));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -325,6 +411,41 @@ public class DatabaseRepo {
 			rs = ps.executeQuery();
 			while(rs.next()) {
 				l.add(new Users(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	
+    	return l;
+    }
+
+	public List<Sales> searchSalesProgressive(String search) {
+		List<Sales> l = new ArrayList<>();
+    	con = getConnection();
+    	String q1 = "(id_produs like ? or user like ? or adresa like ? or data_comandare like ? or data_livrare like ? or status_comanda like ? or cantitate like ? or pret like ?) ";
+    	try {
+    		String query = "select * from sales where 1=1 ";
+    		for(String s: search.split(" ")) {
+				System.out.println(s);
+        		query+="and ";
+        		query+=q1;
+        	}
+			ps = con.prepareStatement(query);
+			int i = 0;
+			for(String s: search.split(" ")) {
+				ps.setString(1+i*7, "%"+s+"%");
+				ps.setString(2+i*7, "%"+s+"%");
+	            ps.setString(3+i*7, "%"+s+"%");
+	            ps.setString(4+i*7, "%"+s+"%");
+	            ps.setString(5+i*7, "%"+s+"%");
+	            ps.setString(6+i*7, "%"+s+"%");
+	            ps.setString(7+i*7, "%"+s+"%");
+				
+	            i++;
+        	}
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				l.add(new Sales(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getInt(7), rs.getInt(8), rs.getInt(9)));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

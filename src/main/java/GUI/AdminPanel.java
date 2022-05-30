@@ -6,6 +6,9 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.GroupLayout ;
 import javax.swing.JButton;
@@ -28,7 +31,8 @@ public class AdminPanel extends JPanel{
 	
 	String[] tableHead = {"ID", "Manufacturer", "Model", "Quantity", "Price"};
 	String[] tableHeadUsers = {"ID", "Username", "Password", "Admin Privileges"};
-	
+	String[] tableHeadSales = {"ID", "ID Produs", "User", "Adresa", "Data Comandare", "Data Livrare", "Status Comanda", "Cantitate", "Pret"};
+
 	JTable stockTable;
 	TableColumn tableColumnManufacturer;
 	TableColumn tableColumnModel;
@@ -39,9 +43,21 @@ public class AdminPanel extends JPanel{
 	TableColumn tableColumnUser;
 	TableColumn tableColumnPass;
 	TableColumn tableColumnAdmPriv;
+
+	JTable salesTable;
+	TableColumn tableColumnID;
+	TableColumn tableColumnIdPrd;
+	TableColumn tableColumnCustommer;
+	TableColumn tableColumnAdresa;
+	TableColumn tableColumnDataC;
+	TableColumn tableColumnDataL;
+	TableColumn tableColumnStatus;
+	TableColumn tableColumnCant;
+	TableColumn tableColumnPret;
 	
 	JTextField searchTextField;
 	JTextField searchUserTextField;
+	JTextField searchSalesTextField;
 	JTextField removeTextField;
 	JTextField removeUserTextField;
 
@@ -56,6 +72,18 @@ public class AdminPanel extends JPanel{
 	JTextField modifyStockQuantityTextField;
 	JTextField modifyStockPriceTextField;
 
+	JTextField modifySalesIDTextField;
+	JTextField modifySalesIdPrdTextField;
+	JTextField modifySalesUserTextField;
+	JTextField modifySalesAdresaTextField;
+	JTextField modifySalesDataCTextField;
+	JTextField modifySalesDataLTextField;
+	JTextField modifySalesStatusTextField;
+	JTextField modifySalesCantitateTextField;
+	JTextField modifySalesPretTextField;
+
+	JTextField deleteSalesTextField;
+
 	JTextField modifyUserIDTextField;
 	JTextField modifyUserUsernameTextField;
 	JTextField modifyUserPasswordTextField;
@@ -63,6 +91,7 @@ public class AdminPanel extends JPanel{
 	
     JLabel searchLabel;
 	JLabel searchUserLabel;
+	JLabel searchSalesLabel;
 	JLabel removeLabel;
 	JLabel removeUserLabel;
 	
@@ -81,13 +110,27 @@ public class AdminPanel extends JPanel{
 	JLabel modifyUserUsernameLabel;
 	JLabel modifyUserPasswordLabel;
 	JLabel modifyUserAdmPrvLabel;
-	
+
+	JLabel modifySalesIDLabel;
+	JLabel modifySalesIdPrdLabel;
+	JLabel modifySalesUserLabel;
+	JLabel modifySalesAdresaLabel;
+	JLabel modifySalesDataCLabel;
+	JLabel modifySalesDataLLabel;
+	JLabel modifySalesStatusLabel;
+	JLabel modifySalesCantitateLabel;
+	JLabel modifySalesPretLabel;
+	JLabel deleteSalesLabel;
+
 	JButton backButton;
 	JButton exitButton;
 	JButton stockAddButton;
     JButton stockModifyButton;
 	JButton userModifyButton;
 	JButton repairAIIndex; //repair auto increment index
+	JButton salesAddButton;
+	JButton salesModifyButton;
+	JButton salesDeleteButton;
 	
 	JMenuBar menuBar;
 	JMenu stockMenu;
@@ -170,19 +213,32 @@ public class AdminPanel extends JPanel{
 	}
 
 	private void loadOrderAddPanel() {
-		System.out.println("*");
+		initSalesSearchTextField();
+		initModifySalesTextField("add");
+		initSalesAddButton();
+		initSalesTable();
+		loadAllSalesDataInSalesTable();
 	}
 
 	private void loadOrderModifyPanel() {
-		System.out.println("*");
+		initSalesSearchTextField();
+		initModifySalesTextField("modify");
+		initSalesModifyButton();
+		initSalesTable();
+		loadAllSalesDataInSalesTable();
 	}
 
 	private void loadOrderSearchPanel() {
-		System.out.println("*");
+		initSalesSearchTextField();
+		initSalesTable();
+		loadAllSalesDataInSalesTable();
 	}
 
 	private void loadOrderDeletePanel() {
-		System.out.println("*");
+		initSalesSearchTextField();
+		initSalesTable();
+		initSalesDeleteButtonAndTextField();
+		loadAllSalesDataInSalesTable();
 	}
 	
 	private void removePanel() {
@@ -193,6 +249,7 @@ public class AdminPanel extends JPanel{
 	private void initJMenu() {
 		menuBar = new JMenuBar();
 		menuBar.setBackground(Color.DARK_GRAY);
+		
 		stockMenu = new JMenu("StockActions");
 		stockMenu.setForeground(Color.white);
 		stockMenu.setBackground(Color.black);
@@ -368,6 +425,126 @@ public class AdminPanel extends JPanel{
 				loadUserSearchPanel();
 			}
 		});
+	}
+
+	private void initModifySalesTextField(String tag) {
+		if(tag.equals("modify")) {
+			modifySalesIDLabel = new JLabel("ID");
+			modifySalesUserLabel = new JLabel("Username");
+			modifySalesDataCLabel = new JLabel("DataC");
+			modifySalesDataLLabel = new JLabel("DataL");
+			modifySalesStatusLabel = new JLabel("Status");
+			modifySalesPretLabel = new JLabel("Pret");
+
+			modifySalesIDTextField = new JTextField();
+			modifySalesUserTextField = new JTextField();
+			modifySalesDataCTextField = new JTextField();
+			modifySalesDataLTextField = new JTextField();
+			modifySalesStatusTextField = new JTextField("1");
+			modifySalesPretTextField = new JTextField();
+
+			modifySalesIDLabel.setForeground(Color.white);
+			modifySalesUserLabel.setForeground(Color.white);
+			modifySalesDataCLabel.setForeground(Color.white);
+			modifySalesDataLLabel.setForeground(Color.white);
+			modifySalesStatusLabel.setForeground(Color.white);
+			modifySalesPretLabel.setForeground(Color.white);
+
+			modifySalesIDTextField.setForeground(Color.white);
+			modifySalesUserTextField.setForeground(Color.white);
+			modifySalesDataCTextField.setForeground(Color.white);
+			modifySalesDataLTextField.setForeground(Color.white);
+			modifySalesStatusTextField.setForeground(Color.white);
+			modifySalesPretTextField.setForeground(Color.white);
+
+			modifySalesIDTextField.setBackground(Color.DARK_GRAY);
+			modifySalesUserTextField.setBackground(Color.DARK_GRAY);
+			modifySalesDataCTextField.setBackground(Color.DARK_GRAY);
+			modifySalesDataLTextField.setBackground(Color.DARK_GRAY);
+			modifySalesStatusTextField.setBackground(Color.DARK_GRAY);
+			modifySalesPretTextField.setBackground(Color.DARK_GRAY);
+	
+		}
+		modifySalesIdPrdLabel = new JLabel("ID Produs");
+		modifySalesAdresaLabel = new JLabel("Adresa");
+		modifySalesCantitateLabel = new JLabel("Cantitate");
+		
+		modifySalesIdPrdLabel.setForeground(Color.white);
+		modifySalesAdresaLabel.setForeground(Color.white);
+		modifySalesCantitateLabel.setForeground(Color.white);
+
+		modifySalesIdPrdTextField = new JTextField();
+		modifySalesAdresaTextField = new JTextField();
+		modifySalesCantitateTextField = new JTextField();
+
+		
+		modifySalesIdPrdTextField.setForeground(Color.white);
+		modifySalesAdresaTextField.setForeground(Color.white);
+		modifySalesCantitateTextField.setForeground(Color.white);
+
+		modifySalesIdPrdTextField.setBackground(Color.DARK_GRAY);
+		modifySalesAdresaTextField.setBackground(Color.DARK_GRAY);
+		modifySalesCantitateTextField.setBackground(Color.DARK_GRAY);
+		if(tag.equals("modify")) {
+			modifySalesIDLabel.setBounds(20, 90, 100, 20);
+			modifySalesIdPrdLabel.setBounds(20, 120, 100, 20);
+			modifySalesUserLabel.setBounds(20, 150, 100, 20);
+			modifySalesAdresaLabel.setBounds(20, 180, 100, 20);
+			modifySalesDataCLabel.setBounds(20, 210, 100, 20);
+			modifySalesDataLLabel.setBounds(20, 240, 100, 20);
+			modifySalesStatusLabel.setBounds(20, 270, 100, 20);
+			modifySalesCantitateLabel.setBounds(20, 300, 100, 20);
+			modifySalesPretLabel.setBounds(20, 330, 100, 20);
+
+			modifySalesIDTextField.setBounds(150, 90, 100, 20);
+			modifySalesIdPrdTextField.setBounds(150, 120, 100, 20);
+			modifySalesUserTextField.setBounds(150, 150, 100, 20);
+			modifySalesAdresaTextField.setBounds(150, 180, 100, 20);
+			modifySalesDataCTextField.setBounds(150, 210, 100, 20);
+			modifySalesDataLTextField.setBounds(150, 240, 100, 20);
+			modifySalesStatusTextField.setBounds(150, 270, 100, 20);
+			modifySalesCantitateTextField.setBounds(150, 300, 100, 20);
+			modifySalesPretTextField.setBounds(150, 330, 100, 20);
+		
+			this.add(modifySalesIDLabel);
+			this.add(modifySalesIdPrdLabel);
+			this.add(modifySalesUserLabel);
+			this.add(modifySalesAdresaLabel);
+			this.add(modifySalesDataCLabel);
+			this.add(modifySalesDataLLabel);
+			this.add(modifySalesStatusLabel);
+			this.add(modifySalesCantitateLabel);
+			this.add(modifySalesPretLabel);
+			
+			this.add(modifySalesIDTextField);
+			this.add(modifySalesIdPrdTextField);
+			this.add(modifySalesUserTextField);
+			this.add(modifySalesAdresaTextField);
+			this.add(modifySalesDataCTextField);
+			this.add(modifySalesDataLTextField);
+			this.add(modifySalesStatusTextField);
+			this.add(modifySalesCantitateTextField);
+			this.add(modifySalesPretTextField);
+		} else {
+			modifySalesIdPrdLabel.setBounds(20, 90, 100, 20);
+			modifySalesAdresaLabel.setBounds(20, 120, 100, 20);
+			modifySalesCantitateLabel.setBounds(20, 150, 100, 20);
+
+			modifySalesIdPrdTextField.setBounds(150, 90, 100, 20);
+			modifySalesAdresaTextField.setBounds(150, 120, 100, 20);
+			modifySalesCantitateTextField.setBounds(150, 150, 100, 20);
+			
+		
+			this.add(modifySalesIdPrdLabel);
+			this.add(modifySalesAdresaLabel);
+			this.add(modifySalesCantitateLabel);
+			
+			this.add(modifySalesIdPrdTextField);
+			this.add(modifySalesAdresaTextField);
+			this.add(modifySalesCantitateTextField);
+		}
+		
+	
 	}
 	
 	private void initModifyUserTextField() {
@@ -585,6 +762,26 @@ public class AdminPanel extends JPanel{
 		this.add(searchLabel, BorderLayout.PAGE_START);
 		this.add(searchTextField, BorderLayout.PAGE_START);
 	}
+
+	private void initSalesSearchTextField() {
+		searchSalesLabel = new JLabel("Search");
+		searchSalesTextField = new JTextField();
+		searchSalesLabel.setForeground(Color.white);
+		searchSalesTextField.setForeground(Color.white);
+		searchSalesTextField.setBackground(Color.DARK_GRAY);
+		searchSalesTextField.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				loadAllSearchedDataInSalesTable();
+			}
+			
+		});
+		searchSalesLabel.setBounds(20, 60, 100, 20);
+		searchSalesTextField.setBounds(150, 60, 100, 20);
+		this.add(searchSalesLabel, BorderLayout.PAGE_START);
+		this.add(searchSalesTextField, BorderLayout.PAGE_START);
+	}
 	
 	private void initStockAddTextField() {
 		addStockManufacturerTextField = new JTextField();
@@ -649,6 +846,100 @@ public class AdminPanel extends JPanel{
 			}
 		});
 		this.add(stockAddButton);
+	}
+
+	private void initSalesAddButton() {
+		salesAddButton = new JButton("Comanda");
+		salesAddButton.setForeground(Color.white);
+		salesAddButton.setBackground(Color.DARK_GRAY);
+		salesAddButton.setBounds(150, 180, 100, 20);
+		salesAddButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addSalesData();
+				revalidareSalesTable();
+				JOptionPane.showMessageDialog(null, "Comanda a fost plasata cu succes!");
+			}
+		});
+		this.add(salesAddButton);
+	}
+
+	private void addSalesData() {
+		String idPrd = modifySalesIdPrdTextField.getText();
+		String usr = LoginPanel.whoIsLoggedIn;
+		String adr = modifySalesAdresaTextField.getText();
+		String dataC = getCurrentDate();
+		String dataL = getDeliveryDate();
+		int status = Integer.parseInt(modifySalesStatusTextField.getText());
+		int cant = Integer.parseInt(modifySalesCantitateTextField.getText());
+		int idPrdInt = Integer.parseInt(idPrd);
+		int pret = getPret(idPrd);
+		this.s.tryOrder(idPrdInt, usr, adr, dataC, dataL, status, cant, pret);
+	}
+
+	private int getPret(String id) {
+		return this.s.getPrice(id);
+	}
+
+	String getCurrentDate() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();  
+		return sdf.format(date);
+	}
+
+	private String getDeliveryDate() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH, 5);
+        return sdf.format(cal.getTime());
+	}
+
+	private void initSalesModifyButton() {
+		salesModifyButton = new JButton("Modifica");
+		salesModifyButton.setForeground(Color.white);
+		salesModifyButton.setBackground(Color.DARK_GRAY);
+		salesModifyButton.setBounds(150, 360, 100, 20);
+		salesModifyButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//modifySalesData();
+				revalidareSalesTable();
+				JOptionPane.showMessageDialog(null, "Comanda a fost modificata cu succecs!");
+			}
+		});
+		this.add(salesModifyButton);
+	}
+
+	private void initSalesDeleteButtonAndTextField() {
+		deleteSalesLabel = new JLabel("ID de sters");
+		deleteSalesLabel.setForeground(Color.white);
+
+		deleteSalesTextField = new JTextField();
+		deleteSalesTextField.setForeground(Color.white);
+		deleteSalesTextField.setBackground(Color.DARK_GRAY);
+
+		salesDeleteButton = new JButton("Stergere");
+		salesDeleteButton.setForeground(Color.white);
+		salesDeleteButton.setBackground(Color.DARK_GRAY);
+		salesDeleteButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deleteSalesData();
+				revalidareSalesTable();
+				JOptionPane.showMessageDialog(null, "Comanda a fost stearsa cu succecs!");
+			}
+		});
+
+		deleteSalesLabel.setBounds(20, 90, 100, 20);
+		deleteSalesTextField.setBounds(150, 90, 100, 20);
+		salesDeleteButton.setBounds(150, 120, 100, 20);
+		this.add(deleteSalesLabel);
+		this.add(deleteSalesTextField);
+		this.add(salesDeleteButton);
+	}
+
+	private void deleteSalesData() {
+		this.s.deleteSalesData(Integer.parseInt(deleteSalesTextField.getText()));
 	}
 
 	private void initUserTable() {
@@ -724,6 +1015,49 @@ public class AdminPanel extends JPanel{
 		this.revalidate();
 		
 	}
+
+	private void initSalesTable() {
+		salesTable = new JTable();
+		salesTable.setForeground(Color.white);
+		salesTable.setBackground(Color.DARK_GRAY);
+
+		tableColumnID = new TableColumn();
+		tableColumnIdPrd = new TableColumn();
+		tableColumnCustommer = new TableColumn();
+		tableColumnAdresa = new TableColumn();
+		tableColumnDataC = new TableColumn();
+		tableColumnDataL = new TableColumn();
+		tableColumnStatus = new TableColumn();
+		tableColumnCant = new TableColumn();
+		tableColumnPret = new TableColumn();
+
+		tableColumnID.setHeaderValue("ID");
+		tableColumnIdPrd.setHeaderValue("ID-Prd");
+		tableColumnCustommer.setHeaderValue("User");
+		tableColumnAdresa.setHeaderValue("Adresa");
+		tableColumnDataC.setHeaderValue("DataC");
+		tableColumnDataL.setHeaderValue("DataL");
+		tableColumnStatus.setHeaderValue("Status");
+		tableColumnCant.setHeaderValue("Cantitate");
+		tableColumnPret.setHeaderValue("Pret");
+
+		salesTable.addColumn(tableColumnID);
+		salesTable.addColumn(tableColumnIdPrd);
+		salesTable.addColumn(tableColumnCustommer);
+		salesTable.addColumn(tableColumnAdresa);
+		salesTable.addColumn(tableColumnDataC);
+		salesTable.addColumn(tableColumnDataL);
+		salesTable.addColumn(tableColumnStatus);
+		salesTable.addColumn(tableColumnCant);
+		salesTable.addColumn(tableColumnPret);
+
+		salesTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
+		JScrollPane sp = new JScrollPane(salesTable);
+		sp.setBounds(280, 60, 580, 480);
+		this.add(sp);
+		this.revalidate();
+		this.repaint();
+	}
 	
 	private void loadAllDataInStockTable() {
 		//emptyTableData();
@@ -765,6 +1099,28 @@ public class AdminPanel extends JPanel{
 		userTable.repaint();
 	}
 
+	private void loadAllSalesDataInSalesTable() {
+		DefaultTableModel d = new DefaultTableModel();
+		d.addColumn(tableHeadSales[0]);
+		d.addColumn(tableHeadSales[1]);
+		d.addColumn(tableHeadSales[2]);
+		d.addColumn(tableHeadSales[3]);
+		d.addColumn(tableHeadSales[4]);
+		d.addColumn(tableHeadSales[5]);
+		d.addColumn(tableHeadSales[6]);
+		d.addColumn(tableHeadSales[7]);
+		d.addColumn(tableHeadSales[8]);
+		int i = 0;
+		for(String[] s: this.s.salesSearchAllData() ) {
+			d.insertRow(i, s);
+			i ++;
+		}
+		salesTable.setModel(d);
+		salesTable.setBackground(Color.DARK_GRAY);
+		salesTable.revalidate();
+		salesTable.repaint();
+	}
+
 	private void loadAllSearchedDataInTable() {
 		String s = searchTextField.getText();
 		DefaultTableModel d = new DefaultTableModel();
@@ -784,6 +1140,28 @@ public class AdminPanel extends JPanel{
 		stockTable.repaint();
 	}
 
+	private void loadAllSearchedDataInSalesTable() {
+		String s = searchSalesTextField.getText();
+		DefaultTableModel d = new DefaultTableModel();
+		d.addColumn(tableHeadSales[0]);
+		d.addColumn(tableHeadSales[1]);
+		d.addColumn(tableHeadSales[2]);
+		d.addColumn(tableHeadSales[3]);
+		d.addColumn(tableHeadSales[4]);
+		d.addColumn(tableHeadSales[5]);
+		d.addColumn(tableHeadSales[6]);
+		d.addColumn(tableHeadSales[7]);
+		d.addColumn(tableHeadSales[8]);
+		int i = 0;
+		for(String[] s1: this.s.salesSearchData(s) ) {
+			d.insertRow(i, s1);
+			i ++;
+		}
+		salesTable.setModel(d);
+		salesTable.setBackground(Color.DARK_GRAY);
+		salesTable.revalidate();
+		salesTable.repaint();
+	}
 	
 	private void removeDataFromID() {
 		String removeString = removeTextField.getText();
@@ -854,6 +1232,18 @@ public class AdminPanel extends JPanel{
 	private void emptyUserTableData() {
 		DefaultTableModel d = new DefaultTableModel();
 		userTable.setModel(d);
+	}
+
+	private void revalidareSalesTable() {
+		emptySalesTableData();
+		loadAllSalesDataInSalesTable();
+		this.revalidate();
+		this.repaint();
+	}
+		
+	private void emptySalesTableData() {
+		DefaultTableModel d = new DefaultTableModel();
+		salesTable.setModel(d);
 	}
 	
 	private void close() {
