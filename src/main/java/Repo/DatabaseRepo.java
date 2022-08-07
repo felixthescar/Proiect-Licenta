@@ -200,7 +200,7 @@ public class DatabaseRepo {
         Connection c = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            c = DriverManager.getConnection("jdbc:mysql://localhost:3306/licenta", "root", "4kgjuzuw");
+            c = DriverManager.getConnection("jdbc:mysql://localhost:3306/licenta", "root", "");
         } catch (ClassNotFoundException e) {
             System.out.println("ClassNotFoundException " + e);
         } catch (SQLException e) {
